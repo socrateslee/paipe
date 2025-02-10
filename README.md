@@ -1,9 +1,9 @@
-# paipe: Your Python LLM Pipeline Assistant
+# pAIpe: Your LLM shell assistant 
 
 [![PyPI version](https://badge.fury.io/py/paipe.svg)](https://pypi.org/project/paipe/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**paipe** is a command-line tool designed to streamline your interactions with Large Language Models (LLMs). It provides a flexible and configurable pipeline to process text input through various LLM providers and models, managed through profiles for ease of use and customization.
+**pAIpe** is a command-line tool designed to streamline your interactions with Large Language Models (LLMs). It provides a flexible and configurable pipeline to process text input through various LLM providers and models, managed through profiles for ease of use and customization.
 
 ## Features
 
@@ -17,6 +17,11 @@
 
 ```bash
 python -m pip install -U paipe
+```
+Or install using uv(run with `uvx paipe`):
+
+```bash
+uv tool install -U paipe
 ```
 
 ## Configuration

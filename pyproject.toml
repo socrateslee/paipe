@@ -1,6 +1,6 @@
 [project]
 name = "paipe"
-version = "0.1.1"
+version = "0.1.2"
 description = "A CLI tool for accessing the LLM API in the terminal."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -8,5 +8,12 @@ dependencies = [
     "pydantic-ai"
 ]
 
+[project.urls]
+homepage = "https://github.com/socrateslee/paipe"
+
 [project.scripts]
 paipe = "paipe.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

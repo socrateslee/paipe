@@ -7,3 +7,4 @@ class PaipeContext(BaseModel):
     stream: bool = Field(default=True, description='Enable stream mode')
     input_text: str = Field(default='', description='The input text')
     prompt: str = Field(default='', description='The prompt')
+    attachments: list = Field(default=[], description='The attachments')

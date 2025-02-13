@@ -30,7 +30,10 @@ def parse_args():
                         help='Specify the profile to use')
     parser.add_argument('--file',
                        type=str,
-                       help='Read input from specified file instead of stdin')
+                       help='Read text from a file and append to the prompt')
+    parser.add_argument('-A', '--attach',
+                       type=str,
+                       help='Read a file as attachment')
     parser.add_argument('--list',
                         action='store_true',
                         help='List available profiles')
@@ -56,7 +59,8 @@ def main():
         sys.exit(0)
     context_dict = {
         'stream': args.stream,
-        'prompt': args.prompt
+        'prompt': args.prompt,
+        'attachments': []
     }
     if args.file:
         with open(args.file, 'r') as f:
@@ -76,9 +80,17 @@ def main():
     else:
         context_dict['system_prompt'] = None
 
+    if args.attach:
+        context_dict['attachments'].append(util.file_as_data_url(args.attach))
+
     context = PaipeContext.model_validate(context_dict)
     asyncio.run(run_agent(context))
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        util.logger.exception(e)
+        if hasattr(e, 'body'):
+            util.logger.error(e.body)

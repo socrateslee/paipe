@@ -63,6 +63,27 @@ def get_agent_model_cls(module):
     return None
 
 
+def process_prompt(full_prompt: str, attachments: list | None = None) -> str | list:
+    '''
+    
+    '''
+    if not attachments:
+        result = full_prompt
+    else:
+        result = [
+            {
+                "type": "text",
+                "text": full_prompt
+            }
+        ]
+        for attachment in attachments:
+            result.append({
+                "type": "image_url",
+                "image_url": attachment
+            })
+    return result
+
+
 async def run_agent(context: PaipeContext):
     configs = load_paipe_config()
     profile = configs[context.profile]
@@ -79,13 +100,17 @@ async def run_agent(context: PaipeContext):
         full_prompt += f'{context.prompt}\n'
     if context.input_text:
         full_prompt += f'{context.input_text}\n'
+
+    processed_prompt = process_prompt(full_prompt,
+                                      attachments=context.attachments)
+
     if context.stream:
-        async with agent.run_stream(full_prompt) as response:
+        async with agent.run_stream(processed_prompt) as response:
             async for delta in response.stream_text(delta=True):
                 print(delta, end='', flush=True)
         print()
     else:
-        result = await agent.run(full_prompt)
+        result = await agent.run(processed_prompt)
         print(result.data)
 
 

@@ -67,3 +67,15 @@ mistral:
 ```
 
 The full list of available models can be found [here](https://docs.mistral.ai/getting-started/models/models_overview/).
+
+### groq
+Use the official API of [Groq](https://groq.com), set `groq` for provider. Example:
+
+```
+groq-mixtral:
+    provider: groq
+    api_key: <YOUR_GROQ_API_KEY>
+    model: 'mixtral-8x7b-32768'
+```
+
+The full list of available models can be found [here](https://console.groq.com/docs/models). And the groq API is also compatible with OpenAI API, so you can use `openai` as the provider(set base_url as https://api.groq.com/openai/v1).

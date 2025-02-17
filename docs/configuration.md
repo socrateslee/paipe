@@ -79,3 +79,15 @@ groq-mixtral:
 ```
 
 The full list of available models can be found [here](https://console.groq.com/docs/models). And the groq API is also compatible with OpenAI API, so you can use `openai` as the provider(set base_url as https://api.groq.com/openai/v1).
+
+### Cohere
+Use the official API of [Cohere](https://cohere.com), set `cohere` for provider. Example:
+
+```
+cohere:
+    provider: cohere
+    api_key: <YOUR_COHERE_API_KEY>
+    model: 'command-r-plus-08-2024'
+```
+
+The full list of available models can be found [here](https://docs.cohere.com/v2/docs/models).

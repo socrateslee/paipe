@@ -64,9 +64,6 @@ def get_agent_model_cls(module):
 
 
 def process_prompt(full_prompt: str, attachments: list | None = None) -> str | list:
-    '''
-    
-    '''
     if not attachments:
         result = full_prompt
     else:
@@ -76,11 +73,19 @@ def process_prompt(full_prompt: str, attachments: list | None = None) -> str | l
                 "text": full_prompt
             }
         ]
-        for attachment in attachments:
-            result.append({
-                "type": "image_url",
-                "image_url": attachment
-            })
+        for data_type, attachment in attachments:
+            if data_type == 'image':
+                result.append({
+                    "type": "image_url",
+                    "image_url": {'url': attachment}
+                })
+            elif data_type == 'video':
+                result.append({
+                    "type": "video_url",
+                    "video_url": {'url': attachment}
+                })
+            else:
+                pass
     return result
 
 
@@ -91,10 +96,12 @@ async def run_agent(context: PaipeContext):
     provider = profile.pop('provider', None) or 'openai'
     model = profile.pop('model', None) or ''
     profile_system_prompt = profile.pop('system_prompt', None)
+    model_settings =  profile.pop('model_settings', None)
 
     agent_model_cls = get_agent_model_cls(import_module(provider))
     agent = Agent(agent_model_cls(model, **profile),
-                  system_prompt=context.system_prompt or profile_system_prompt or ())
+                  system_prompt=context.system_prompt or profile_system_prompt or (),
+                  model_settings=model_settings)
     full_prompt  = ''
     if context.prompt:
         full_prompt += f'{context.prompt}\n'

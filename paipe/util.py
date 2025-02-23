@@ -19,4 +19,9 @@ def file_as_data_url(file_path: str) -> str:
     mime_type, _ = mimetypes.guess_type(file_path)
     if mime_type is None:
         mime_type = 'application/octet-stream'
-    return f'data:{mime_type};base64,{base64.b64encode(data).decode("utf-8")}'
+    data_type = 'text'
+    if mime_type.startswith('image/'):
+        data_type = 'image'
+    elif mime_type.startswith('video/'):
+        data_type = 'video'
+    return (data_type, f'data:{mime_type};base64,{base64.b64encode(data).decode("utf-8")}')

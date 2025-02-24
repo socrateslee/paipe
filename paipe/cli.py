@@ -37,6 +37,9 @@ def parse_args():
     parser.add_argument('--list',
                         action='store_true',
                         help='List available profiles')
+    parser.add_argument('-o', '--operation',
+                        type=str,
+                        help='Perform a specific operation')
     parser.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Enable verbose output')
@@ -83,8 +86,12 @@ def main():
     if args.attach:
         context_dict['attachments'].append(util.file_as_data_url(args.attach))
 
-    context = PaipeContext.model_validate(context_dict)
-    asyncio.run(run_agent(context))
+    if args.operation:
+        from .operations import handle_operation
+        handle_operation(args.operation, context_dict)
+    else:
+        context = PaipeContext.model_validate(context_dict)
+        asyncio.run(run_agent(context))
 
 
 if __name__ == '__main__':

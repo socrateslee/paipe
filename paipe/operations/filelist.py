@@ -17,7 +17,8 @@ def split_to_filelist(output):
 def filelist_to_markdown(files):
     markdown = ''
     for file in files:
-        markdown += f'``` title="{file}" \n{open(file).read()}\n```\n\n'
+        if os.path.isfile(file):
+            markdown += f'``` title="{file}" \n{open(file).read()}\n```\n\n'
     return markdown
 
 

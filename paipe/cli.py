@@ -51,6 +51,9 @@ def parse_args():
     parser.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Enable verbose output')
+    parser.add_argument('--version',
+                       action='store_true',
+                       help='Show version information and quit')
     parser.add_argument('prompt',
                        nargs='?',
                        type=str,
@@ -67,6 +70,10 @@ def main():
         util.set_verbose(False)
     if args.list:
         profiles = list_profiles()
+        sys.exit(0)
+    elif args.version:
+        from . import __version__
+        print(f'paipe {__version__}')
         sys.exit(0)
     context_dict = {
         'stream': args.stream,

@@ -1,13 +1,16 @@
 import os
 import sys
 import glob
+import json
 import importlib
-import argparse
 from pathlib import Path
 import yaml
+import pydantic
+import dydantic
 import pydantic_ai.models
 from pydantic_ai import Agent
 from .models import PaipeContext
+from .util import logger
 
 
 def load_paipe_config():
@@ -99,9 +102,18 @@ async def run_agent(context: PaipeContext):
     model_settings =  profile.pop('model_settings', None)
 
     agent_model_cls = get_agent_model_cls(import_module(provider))
-    agent = Agent(agent_model_cls(model, **profile),
-                  system_prompt=context.system_prompt or profile_system_prompt or (),
-                  model_settings=model_settings)
+    agent_params = {
+        "system_prompt": context.system_prompt or profile_system_prompt or (),
+        "model_settings": model_settings
+    }
+    if context.json_schema:
+        agent_params['result_type'] = dydantic.create_model_from_schema(
+                json.loads(context.json_schema))
+        context.stream = False
+    logger.debug(f'[model to use] {context.model or model}')
+
+    agent = Agent(agent_model_cls(context.model or model, **profile),
+                  **agent_params)
     full_prompt  = ''
     if context.prompt:
         full_prompt += f'{context.prompt}\n'
@@ -118,7 +130,10 @@ async def run_agent(context: PaipeContext):
         print()
     else:
         result = await agent.run(processed_prompt)
-        print(result.data)
+        if context.json_schema and isinstance(result.data, pydantic.BaseModel):
+            print(result.data.model_dump_json())
+        else:
+            print(result.data)
 
 
 def list_profiles():

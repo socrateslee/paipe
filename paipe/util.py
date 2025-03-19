@@ -3,7 +3,9 @@ import mimetypes
 import logging
 
 logger = logging.getLogger('paipe')
-logger.addHandler(logging.StreamHandler())
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
 
 def set_verbose(verbose: bool):

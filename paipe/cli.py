@@ -28,9 +28,17 @@ def parse_args():
     parser.add_argument('-P', '--profile',
                         type=str,
                         help='Specify the profile to use')
+    parser.add_argument('--json',
+                        type=str,
+                        default=None,
+                        help='The JSON Schema for the result, implies --no-stream')
     parser.add_argument('--file',
                        type=str,
                        help='Read text from a file and append to the prompt')
+    parser.add_argument('--model',
+                       type=str,
+                       default=None,
+                       help='Specify the model to use(Overrides the profile)')
     parser.add_argument('-A', '--attach',
                        type=str,
                        help='Read a file as attachment')
@@ -63,6 +71,8 @@ def main():
     context_dict = {
         'stream': args.stream,
         'prompt': args.prompt,
+        'json_schema': args.json,
+        'model': args.model,
         'attachments': []
     }
     if args.file:

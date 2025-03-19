@@ -1,11 +1,12 @@
 [project]
 name = "paipe"
-version = "0.1.4"
+version = "0.1.5"
 description = "A CLI tool for accessing the LLM API in the terminal."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "pydantic-ai"
+    "pydantic-ai",
+    "dydantic"
 ]
 classifiers = [
     "Environment :: Console",

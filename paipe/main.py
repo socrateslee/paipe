@@ -53,6 +53,11 @@ def extract_modules(path: str):
 
 
 def import_module(name: str):
+    try:
+        return importlib.import_module(f'.providers.{name}', package='paipe')
+    except ImportError as e:
+        print(f"Error importing module {name}: {e}")
+        pass
     full_module_path = f'pydantic_ai.models.{name}'
     module = importlib.import_module(full_module_path)
     return module

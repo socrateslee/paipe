@@ -11,7 +11,7 @@ import pydantic_ai.models
 from pydantic_ai import Agent
 from pydantic_ai.messages import BinaryContent
 from .models import PaipeContext
-from .util import logger
+from .util import logger, import_module
 
 
 def load_paipe_config():
@@ -39,29 +39,15 @@ def load_paipe_config():
     return None
 
 
-def extract_modules(path: str):
-    """
-    Extract all Python module names from a directory path,
-    excluding __init__.py files.
-    """
-    modules = []
-    for file in os.listdir(os.path.dirname(path)):
-        if file.endswith('.py') and file != '__init__.py':
-            file_name = os.path.basename(file)
-            module = file_name[:-3]
-            modules.append(module)
-    return modules
-
-
-def import_module(name: str):
-    try:
-        return importlib.import_module(f'.providers.{name}', package='paipe')
-    except ImportError as e:
-        print(f"Error importing module {name}: {e}")
-        pass
-    full_module_path = f'pydantic_ai.models.{name}'
-    module = importlib.import_module(full_module_path)
+def import_model_module(name: str):
+    module = import_module('paipe.providers', name)
+    if not module:
+        module = import_module('pydantic_ai.models', name)
     return module
+
+
+def import_provider_module(name: str):
+    return import_module('pydantic_ai.providers', name)
 
 
 def get_agent_model_cls(module):
@@ -70,6 +56,33 @@ def get_agent_model_cls(module):
         if hasattr(obj, '__mro__') and pydantic_ai.models.Model in obj.__mro__[1:]:
             return obj
     return None
+
+
+def get_agent_provider_cls(module):
+    for name in dir(module):
+        obj = getattr(module, name)
+        if hasattr(obj, '__mro__') and pydantic_ai.providers.Provider in obj.__mro__[1:]:
+            return obj
+    return None
+
+
+def get_agent_model(model_name: str, provider: str, **profile):
+    model_params = {}
+    model_cls = get_agent_model_cls(import_model_module(provider))
+    provider_module = import_provider_module(provider)
+    if provider_module:
+        provider_cls = get_agent_provider_cls(provider_module)
+        if provider_cls:
+            provider_params = {}
+            for key in provider_cls.__init__.__annotations__:
+                if key == 'return':
+                    continue
+                if key in profile:
+                    provider_params[key] = profile.pop(key)
+            provider_instance = provider_cls(**provider_params)
+            model_params['provider'] = provider_instance
+    model_params.update(profile)
+    return model_cls(model_name, **model_params)
 
 
 def process_prompt(full_prompt: str, attachments: list | None = None) -> str | list:
@@ -99,7 +112,6 @@ async def run_agent(context: PaipeContext):
     profile_system_prompt = profile.pop('system_prompt', None)
     model_settings =  profile.pop('model_settings', None)
 
-    agent_model_cls = get_agent_model_cls(import_module(provider))
     agent_params = {
         "system_prompt": context.system_prompt or profile_system_prompt or (),
         "model_settings": model_settings
@@ -110,7 +122,7 @@ async def run_agent(context: PaipeContext):
         context.stream = False
     logger.debug(f'[model to use] {context.model or model}')
 
-    agent = Agent(agent_model_cls(context.model or model, **profile),
+    agent = Agent(get_agent_model(context.model or model, provider, **profile),
                   **agent_params)
     full_prompt  = ''
     if context.prompt:

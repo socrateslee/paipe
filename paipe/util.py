@@ -1,6 +1,7 @@
 import base64
 import mimetypes
 import logging
+import importlib
 from typing import Generator
 
 logger = logging.getLogger('paipe')
@@ -37,3 +38,24 @@ def to_attachment_pairs(file_path_list: list[str]) -> Generator[tuple[bytes, str
         if mime_type is None:
             mime_type = 'application/octet-stream'
         yield (mime_type, data)
+
+
+def import_module(parent_module: str, name: str):
+    '''
+    Import a module from a parent module.
+    '''
+    try:
+        return importlib.import_module(f'{parent_module}.{name}')
+    except ImportError as e:
+        return None
+
+
+def find_cls(module, base_class):
+    '''
+    Find a class in a module that inherits from a base class.
+    '''
+    for name in dir(module):
+        obj = getattr(module, name)
+        if hasattr(obj, '__mro__') and base_class in obj.__mro__[1:]:
+            return obj
+    return None

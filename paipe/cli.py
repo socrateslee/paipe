@@ -101,7 +101,7 @@ def main():
         context_dict['system_prompt'] = None
 
     if args.attach:
-        context_dict['attachments'].append(util.file_as_data_url(args.attach))
+        context_dict['attachments'].extend(util.to_attachment_pairs([args.attach]))
 
     if args.operation:
         from .operations import handle_operation

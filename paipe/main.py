@@ -9,6 +9,7 @@ import pydantic
 import dydantic
 import pydantic_ai.models
 from pydantic_ai import Agent
+from pydantic_ai.messages import BinaryContent
 from .models import PaipeContext
 from .util import logger
 
@@ -76,24 +77,16 @@ def process_prompt(full_prompt: str, attachments: list | None = None) -> str | l
         result = full_prompt
     else:
         result = [
-            {
-                "type": "text",
-                "text": full_prompt
-            }
+            full_prompt
         ]
-        for data_type, attachment in attachments:
-            if data_type == 'image':
-                result.append({
-                    "type": "image_url",
-                    "image_url": {'url': attachment}
-                })
-            elif data_type == 'video':
-                result.append({
-                    "type": "video_url",
-                    "video_url": {'url': attachment}
-                })
-            else:
-                pass
+        for (media_type, data) in attachments:
+            content = BinaryContent(
+                data=data,
+                media_type=media_type
+            )
+            result.append(content)
+        else:
+            pass
     return result
 
 

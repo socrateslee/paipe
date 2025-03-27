@@ -1,6 +1,7 @@
 import base64
 import mimetypes
 import logging
+from typing import Generator
 
 logger = logging.getLogger('paipe')
 handler = logging.StreamHandler()
@@ -27,3 +28,12 @@ def file_as_data_url(file_path: str) -> str:
     elif mime_type.startswith('video/'):
         data_type = 'video'
     return (data_type, f'data:{mime_type};base64,{base64.b64encode(data).decode("utf-8")}')
+
+
+def to_attachment_pairs(file_path_list: list[str]) -> Generator[tuple[bytes, str], None, None]:
+    for file_path in file_path_list:
+        data = open(file_path, 'rb').read()
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if mime_type is None:
+            mime_type = 'application/octet-stream'
+        yield (mime_type, data)

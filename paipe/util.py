@@ -2,6 +2,7 @@ import base64
 import mimetypes
 import logging
 import importlib
+import re
 from typing import Generator
 
 logger = logging.getLogger('paipe')
@@ -59,3 +60,23 @@ def find_cls(module, base_class):
         if hasattr(obj, '__mro__') and base_class in obj.__mro__[1:]:
             return obj
     return None
+
+
+def extract_markdown_code_blocks(markdown: str, language: str = '') -> list:
+    """
+    Extract code blocks from a markdown document.
+
+    Args:
+        markdown: The markdown text to process
+        language: Optional language filter (case insensitive)
+
+    Returns:
+        A list of extracted code blocks
+    """
+    pattern = r'```([\w+-]*)\n(.*?)\n```'
+    matches = re.findall(pattern, markdown, re.DOTALL)
+    if language:
+        return [code for lang, code in matches
+                if lang.lower() == language.lower()]
+    else:
+        return [code for _, code in matches]

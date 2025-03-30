@@ -45,6 +45,12 @@ def parse_args():
     parser.add_argument('--list',
                         action='store_true',
                         help='List available profiles')
+    parser.add_argument('-e', '--extract-code-block',
+                        nargs='?',
+                        type=str,
+                        default=None,
+                        const=True,
+                        help='Extract last code block matched from the resposne, with optional language specified, implies --no-stream')
     parser.add_argument('-o', '--operation',
                         type=str,
                         help='Perform a specific operation')
@@ -79,6 +85,7 @@ def main():
         'stream': args.stream,
         'prompt': args.prompt,
         'json_schema': args.json,
+        'extract_code_block': args.extract_code_block,
         'model': args.model,
         'attachments': []
     }

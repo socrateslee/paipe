@@ -8,5 +8,6 @@ class PaipeContext(BaseModel):
     input_text: str = Field(default='', description='The input text')
     prompt: str = Field(default='', description='The prompt')
     json_schema: str | None = Field(default=None, description='The JSON schema for the result')
+    extract_code_block: bool | str | None = Field(default=None, description='Extract code block')
     model: str | None = Field(default=None, description='The model name')
     attachments: list = Field(default=[], description='The attachments')

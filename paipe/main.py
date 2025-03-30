@@ -11,7 +11,11 @@ import pydantic_ai.models
 from pydantic_ai import Agent
 from pydantic_ai.messages import BinaryContent
 from .models import PaipeContext
-from .util import logger, import_module
+from .util import (
+    logger,
+    import_module,
+    extract_markdown_code_blocks
+)
 
 
 def load_paipe_config():
@@ -120,6 +124,8 @@ async def run_agent(context: PaipeContext):
         agent_params['result_type'] = dydantic.create_model_from_schema(
                 json.loads(context.json_schema))
         context.stream = False
+    elif context.extract_code_block:
+        context.stream = False
     logger.debug(f'[model to use] {context.model or model}')
 
     agent = Agent(get_agent_model(context.model or model, provider, **profile),
@@ -142,6 +148,12 @@ async def run_agent(context: PaipeContext):
         result = await agent.run(processed_prompt)
         if context.json_schema and isinstance(result.data, pydantic.BaseModel):
             print(result.data.model_dump_json())
+        elif context.extract_code_block and isinstance(result.data, str):
+            code_blocks = extract_markdown_code_blocks(
+                result.data,
+                language='' if context.extract_code_block is True else context.extract_code_block
+            )
+            print(code_blocks[-1] or '')
         else:
             print(result.data)
 

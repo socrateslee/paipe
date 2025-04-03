@@ -158,7 +158,7 @@ async def run_agent(context: PaipeContext):
             print(result.data)
 
 
-def list_profiles():
+def list_profiles(prefix: str | bool = ''):
     '''
     List all profiles.
     '''
@@ -166,5 +166,9 @@ def list_profiles():
     if configs is None:
         print("No profiles found")
         return
+    if prefix is True:
+        prefix = ''
     for profile_name in configs:
+        if prefix and not profile_name.startswith(prefix):
+            continue
         print(profile_name)

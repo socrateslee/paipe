@@ -43,8 +43,11 @@ def parse_args():
                        type=str,
                        help='Read a file as attachment')
     parser.add_argument('--list',
-                        action='store_true',
-                        help='List available profiles')
+                        nargs='?',
+                        type=str,
+                        default=None,
+                        const=True,
+                        help='List available profiles with optional prefix specified')
     parser.add_argument('-e', '--extract-code-block',
                         nargs='?',
                         type=str,
@@ -75,7 +78,7 @@ def main():
     else:
         util.set_verbose(False)
     if args.list:
-        profiles = list_profiles()
+        profiles = list_profiles(args.list)
         sys.exit(0)
     elif args.version:
         from . import __version__

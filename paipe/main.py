@@ -70,9 +70,9 @@ def get_agent_provider_cls(module):
     return None
 
 
-def get_agent_model(model_name: str, provider: str, **profile):
+def get_agent_model(model_name: str, protocol: str, provider: str, **profile):
     model_params = {}
-    model_cls = get_agent_model_cls(import_model_module(provider))
+    model_cls = get_agent_model_cls(import_model_module(protocol))
     provider_module = import_provider_module(provider)
     if provider_module:
         provider_cls = get_agent_provider_cls(provider_module)
@@ -111,6 +111,7 @@ async def run_agent(context: PaipeContext):
     configs = load_paipe_config()
     profile = configs[context.profile]
 
+    protocol = profile.pop('protocol', None) or profile.pop('provider', None) or 'openai'
     provider = profile.pop('provider', None) or 'openai'
     model = profile.pop('model', None) or ''
     profile_system_prompt = profile.pop('system_prompt', None)
@@ -128,7 +129,7 @@ async def run_agent(context: PaipeContext):
         context.stream = False
     logger.debug(f'[model to use] {context.model or model}')
 
-    agent = Agent(get_agent_model(context.model or model, provider, **profile),
+    agent = Agent(get_agent_model(context.model or model, protocol, provider, **profile),
                   **agent_params)
     full_prompt  = ''
     if context.prompt:

@@ -41,7 +41,8 @@ def parse_args():
                        help='Specify the model to use(Overrides the profile)')
     parser.add_argument('-A', '--attach',
                        type=str,
-                       help='Read a file as attachment')
+                       action='append',
+                       help='Add a file as attachment')
     parser.add_argument('--list',
                         nargs='?',
                         type=str,
@@ -111,7 +112,7 @@ def main():
         context_dict['system_prompt'] = None
 
     if args.attach:
-        context_dict['attachments'].extend(util.to_attachment_pairs([args.attach]))
+        context_dict['attachments'].extend(util.to_attachment_pairs(args.attach))
 
     if args.operation:
         from .operations import handle_operation

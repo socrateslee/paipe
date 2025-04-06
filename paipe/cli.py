@@ -10,6 +10,8 @@ from paipe import util
 from paipe.models import PaipeContext
 from paipe.main import run_agent, list_profiles
 
+util.patch_video_mimetype()
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Command line argument parser')

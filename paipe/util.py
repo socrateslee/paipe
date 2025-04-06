@@ -80,3 +80,13 @@ def extract_markdown_code_blocks(markdown: str, language: str = '') -> list:
                 if lang.lower() == language.lower()]
     else:
         return [code for _, code in matches]
+
+
+def patch_video_mimetype():
+    @property
+    def is_image(self) -> bool:
+        """Return `True` if the media type is an image type."""
+        return self.media_type.startswith(('image/', 'video/'))
+    from pydantic_ai.messages import BinaryContent
+    BinaryContent.is_image = is_image
+    logger.debug("Patched pydantic_ai.messages.BinaryContent.is_image")

@@ -1,10 +1,5 @@
-import os
-import sys
-import glob
 import json
-import importlib
 from pathlib import Path
-import yaml
 import pydantic
 import dydantic
 import pydantic_ai.models
@@ -16,31 +11,7 @@ from .util import (
     import_module,
     extract_markdown_code_blocks
 )
-
-
-def load_paipe_config():
-    """
-    Load paipe.yaml config file with priority:
-    ./ > ~/.local/share/paipe/ > /etc/
-    """
-    config_locations = [
-        Path('./paipe.yaml'),  # Current directory
-        Path.home() / '.local' / 'share' / 'paipe' / 'paipe.yaml',  # User local
-        Path('/etc/paipe.yaml')  # System config
-    ]
-    for config_path in config_locations:
-        if config_path.exists():
-            try:
-                with open(config_path, 'r') as f:
-                    return yaml.safe_load(f)
-            except yaml.YAMLError as e:
-                print(f"Error parsing YAML in {config_path}: {e}")
-                continue
-            except Exception as e:
-                print(f"Error reading {config_path}: {e}")
-                continue
-    print("No valid paipe.yaml configuration found")
-    return None
+from . profiles import get_profile
 
 
 def import_model_module(name: str):
@@ -108,8 +79,9 @@ def process_prompt(full_prompt: str, attachments: list | None = None) -> str | l
 
 
 async def run_agent(context: PaipeContext):
-    configs = load_paipe_config()
-    profile = configs[context.profile]
+    #configs = load_paipe_config()
+    #profile = configs[context.profile]
+    profile = get_profile(context.profile)
 
     protocol = profile.pop('protocol', None) or profile.pop('provider', None) or 'openai'
     provider = profile.pop('provider', None) or 'openai'
@@ -157,19 +129,3 @@ async def run_agent(context: PaipeContext):
             print(code_blocks[-1] or '')
         else:
             print(result.data)
-
-
-def list_profiles(prefix: str | bool = ''):
-    '''
-    List all profiles.
-    '''
-    configs = load_paipe_config()
-    if configs is None:
-        print("No profiles found")
-        return
-    if prefix is True:
-        prefix = ''
-    for profile_name in configs:
-        if prefix and not profile_name.startswith(prefix):
-            continue
-        print(profile_name)

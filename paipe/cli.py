@@ -8,7 +8,8 @@ import yaml
 from pathlib import Path
 from paipe import util
 from paipe.models import PaipeContext
-from paipe.main import run_agent, list_profiles
+from paipe.profiles import list_profiles
+from paipe.main import run_agent
 
 util.patch_video_mimetype()
 

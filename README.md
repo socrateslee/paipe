@@ -16,12 +16,18 @@
 ## Installation
 
 ```bash
-python -m pip install -U paipe
+# install with openai protocol supported
+python -m pip install -U paipe[openai]
+# install with all protocol supported
+python -m pip install -U paipe[all]
 ```
 Or install using uv(run with `uvx paipe`):
 
 ```bash
-uv tool install -U paipe
+# install with openai protocol supported
+uv tool install -U paipe[openai]
+# install with all protocol supported
+uv tool install -U paipe[all]
 ```
 
 ## Configuration
@@ -38,12 +44,12 @@ Here's an example of a `paipe.yaml` configuration file(access api via openrouter
 
 ```yaml
 default:
-    provider: openai
+    protocol: openai
     api_key: 'YOUR_OPENROUTER_API_KEY_HERE' # Replace with your actual API key
     base_url: 'https://openrouter.ai/api/v1'
     model: 'deepseek/deepseek-chat:free'
 deepseek-r1:
-    provider: openai
+    protocol: openai
     api_key: 'YOUR_OPENROUTER_API_KEY_HERE' # Replace with your actual API key
     base_url: 'https://openrouter.ai/api/v1'
     model: 'deepseek/deepseek-r1:free'
@@ -51,7 +57,7 @@ deepseek-r1:
 
 Each section in the `paipe.yaml` file defines a **profile**.  Here's a breakdown of the profile settings:
 
-- **`provider`**: Specifies the LLM provider. Currently, `paipe` is configured to use `openai` which can interface with various providers through platforms like OpenRouter or directly with specific APIs.
+- **`protocol`**: Specifies the LLM API protocol. Currently, `paipe` is configured to use `openai` which can interface with various providers through platforms like OpenRouter or directly with specific APIs.
 - **`api_key`**: Your API key for the chosen provider.  **Replace the placeholder `'YOUR_API_KEY_HERE'` with your actual API key.**
 - **`base_url`**: The API base URL for the provider. For OpenRouter, it's typically `'https://openrouter.ai/api/v1'`.
 - **`model`**: The specific LLM model to use from the provider.  The available models depend on your chosen provider and API key access. Examples include `'google/gemini-2.0-pro-exp-02-05:free'`, `'qwen2-72b-instruct'`, `'deepseek/deepseek-r1:free'`, etc.

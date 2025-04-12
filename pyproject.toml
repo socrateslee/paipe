@@ -1,6 +1,6 @@
 [project]
 name = "paipe"
-version = "0.1.9"
+version = "0.1.10"
 description = "A CLI tool for accessing the LLM API in the terminal."
 readme = "README.md"
 requires-python = ">=3.10"

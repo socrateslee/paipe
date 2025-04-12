@@ -1,9 +1,12 @@
+import sys
+import json
 import base64
 import mimetypes
 import logging
 import importlib
 import re
 from typing import Generator
+import pydantic_ai.result
 
 logger = logging.getLogger('paipe')
 handler = logging.StreamHandler()
@@ -90,3 +93,10 @@ def patch_video_mimetype():
     from pydantic_ai.messages import BinaryContent
     BinaryContent.is_image = is_image
     logger.debug("Patched pydantic_ai.messages.BinaryContent.is_image")
+
+
+def show_json_usage(usage: pydantic_ai.result.Usage,
+                    file=None):
+    if file is None:
+        file = sys.stderr
+    print("Usage:", json.dumps(usage.__dict__), file=file)

@@ -1,3 +1,4 @@
+import sys
 import json
 from pathlib import Path
 import pydantic
@@ -9,7 +10,8 @@ from .models import PaipeContext
 from .util import (
     logger,
     import_module,
-    extract_markdown_code_blocks
+    extract_markdown_code_blocks,
+    show_json_usage
 )
 from . profiles import get_profile
 
@@ -117,6 +119,8 @@ async def run_agent(context: PaipeContext):
             async for delta in response.stream_text(delta=True):
                 print(delta, end='', flush=True)
         print()
+        if context.usage:
+            show_json_usage(response.usage())
     else:
         result = await agent.run(processed_prompt)
         if context.json_schema and isinstance(result.data, pydantic.BaseModel):
@@ -129,3 +133,5 @@ async def run_agent(context: PaipeContext):
             print(code_blocks[-1] or '')
         else:
             print(result.data)
+        if context.usage:
+            show_json_usage(result.usage())

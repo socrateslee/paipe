@@ -61,6 +61,9 @@ def parse_args():
     parser.add_argument('-o', '--operation',
                         type=str,
                         help='Perform a specific operation')
+    parser.add_argument('--usage',
+                        action='store_true',
+                        help='Show usage information in stderr.')
     parser.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Enable verbose output')
@@ -94,7 +97,8 @@ def main():
         'json_schema': args.json,
         'extract_code_block': args.extract_code_block,
         'model': args.model,
-        'attachments': []
+        'attachments': [],
+        'usage': args.usage,
     }
     if args.file:
         with open(args.file, 'r') as f:

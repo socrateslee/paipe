@@ -63,9 +63,9 @@ $ paipe --json '{"type": "object", "properties": {"name": {"type": "string"}}}' 
 {"name":"Jupiter"}
 ```
 
-## Use `--extract`
+## Use `--extract`/`-e`
 
-If the model response is in  format but wrapped in a markdown code block, you can use `--extract` to extract the JSON result. Here's an example:
+If the model response is in  format but wrapped in a markdown code block, you can use `--extract`/`-e` to extract the JSON result. Here's an example:
 
 ```bash
 $ paipe --extract json "The world is full of [mask]. Find a proper word to fill the mask and return in JSON format."

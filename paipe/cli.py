@@ -71,7 +71,7 @@ def parse_args():
                        action='store_true',
                        help='Show version information and quit')
     parser.add_argument('prompt',
-                       nargs='?',
+                       nargs='*',
                        type=str,
                        default='',
                        help='The prompt to process')
@@ -93,7 +93,7 @@ def main():
         sys.exit(0)
     context_dict = {
         'stream': args.stream,
-        'prompt': args.prompt,
+        'prompt': ' '.join(args.prompt),
         'json_schema': args.json,
         'extract_code_block': args.extract_code_block,
         'model': args.model,

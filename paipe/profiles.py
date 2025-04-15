@@ -49,9 +49,10 @@ def get_profile(profile_name: str):
     profile_result = {}
     model_settings_result = {}
     for profile_name in reversed(profile_dep_list):
+        profile = configs[profile_name]
         model_settings = profile.pop('model_settings', {})
         model_settings_result.update(model_settings)
-        profile_result.update(configs[profile_name])
+        profile_result.update(profile)
     profile_result.pop('_from', None)
     if model_settings_result:
         profile_result['model_settings'] = model_settings_result

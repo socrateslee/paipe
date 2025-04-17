@@ -81,9 +81,10 @@ def process_prompt(full_prompt: str, attachments: list | None = None) -> str | l
 
 
 async def run_agent(context: PaipeContext):
-    #configs = load_paipe_config()
-    #profile = configs[context.profile]
     profile = get_profile(context.profile)
+    if profile is None:
+        print(f"Profile {profile} is not available in the profile.")
+        sys.exit(1)
 
     protocol = profile.pop('protocol', None) or profile.pop('provider', None) or 'openai'
     provider = profile.pop('provider', None) or 'openai'

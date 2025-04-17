@@ -70,6 +70,8 @@ def build_call_parser(parser):
                         help='Extract last code block matched from the resposne, with optional language specified, implies --no-stream')
     parser.add_argument('-o', '--operation',
                         type=str,
+                        action=util.DeprecatedAction,
+                        deprecated='Deprecated, use `paipe op` instead',
                         help='Perform a specific operation')
     parser.add_argument('--usage',
                         action='store_true',

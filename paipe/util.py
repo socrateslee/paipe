@@ -5,6 +5,7 @@ import mimetypes
 import logging
 import importlib
 import re
+import argparse
 from typing import Generator
 import pydantic_ai.result
 
@@ -19,6 +20,23 @@ def set_verbose(verbose: bool):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
+
+
+class DeprecatedAction(argparse.Action):
+    def __init__(self, option_strings, deprecated=False, help=None, **kwargs):
+        if help is not None:
+            if deprecated:
+                help += ' (DEPRECATED)'
+        super().__init__(option_strings, help=help, **kwargs)
+        self.deprecated = deprecated
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if self.deprecated:
+            logger.warning(
+                self.deprecated if isinstance(self.deprecated, str)\
+                      else f'{self.option_strings[0]} is deprecated.'
+                )
+        setattr(namespace, self.dest, values)
 
 
 def file_as_data_url(file_path: str) -> str:

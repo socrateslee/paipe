@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 import pydantic_ai.models.openai
 from pydantic_ai.models.openai import (
     ModelMessage,
@@ -40,10 +40,13 @@ class OpenAIModel(pydantic_ai.models.openai.OpenAIModel):
         else:
             tool_choice = 'auto'
 
-        openai_messages: list[chat.ChatCompletionMessageParam] = []
-        for m in messages:
-            async for msg in self._map_message(m):
-                openai_messages.append(msg)
+        if hasattr(self, '_map_messages'):
+            openai_messages = await self._map_messages(messages)
+        else:
+            openai_messages: list[chat.ChatCompletionMessageParam] = []
+            for m in messages:
+                async for msg in self._map_message(m):
+                    openai_messages.append(msg)
         try:
             return await self.client.chat.completions.create(
                 model=self._model_name,

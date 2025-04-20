@@ -127,11 +127,14 @@ async def run_agent(context: PaipeContext):
         if context.json_schema and isinstance(result.data, pydantic.BaseModel):
             print(result.data.model_dump_json())
         elif context.extract_code_block and isinstance(result.data, str):
+            language = '' if context.extract_code_block is True else context.extract_code_block
             code_blocks = extract_markdown_code_blocks(
                 result.data,
-                language='' if context.extract_code_block is True else context.extract_code_block
+                language=language
             )
-            print(code_blocks[-1] or '')
+            if not code_blocks:
+                logger.warning(f"No {language} code block detected.")
+            print(code_blocks[-1] if code_blocks else '')
         else:
             print(result.data)
         if context.usage:

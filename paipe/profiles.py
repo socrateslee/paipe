@@ -1,6 +1,25 @@
+import platform
 from pathlib import Path
 import yaml
 from .util import logger
+
+
+def get_config_locations():
+    """
+    Return the config locations based on current OS
+    """
+    if platform.system() == 'Windows':
+        return [
+            Path('./paipe.yaml'),  # Current directory
+            Path.home() / '.paipe' / 'paipe.yaml',  # User home
+            Path('C:\\ProgramData\\paipe\\paipe.yaml')  # System config
+        ]
+    else:
+        return [
+            Path('./paipe.yaml'),  # Current directory
+            Path.home() / '.local' / 'share' / 'paipe' / 'paipe.yaml',  # User local
+            Path('/etc/paipe.yaml')  # System config
+        ]
 
 
 def load_paipe_config():
@@ -8,23 +27,20 @@ def load_paipe_config():
     Load paipe.yaml config file with priority:
     ./ > ~/.local/share/paipe/ > /etc/
     """
-    config_locations = [
-        Path('./paipe.yaml'),  # Current directory
-        Path.home() / '.local' / 'share' / 'paipe' / 'paipe.yaml',  # User local
-        Path('/etc/paipe.yaml')  # System config
-    ]
+    config_locations = get_config_locations()
     for config_path in config_locations:
         if config_path.exists():
             try:
-                with open(config_path, 'r') as f:
+                logger.debug(f"Loading config from {config_path}")
+                with open(config_path, 'r', encoding='utf-8') as f:
                     return yaml.safe_load(f)
             except yaml.YAMLError as e:
-                print(f"Error parsing YAML in {config_path}: {e}")
+                logger.error(f"Error parsing YAML in {config_path}: {e}")
                 continue
             except Exception as e:
-                print(f"Error reading {config_path}: {e}")
+                logger.error(f"Error reading {config_path}: {e}")
                 continue
-    print("No valid paipe.yaml configuration found")
+    logger.error("No valid paipe.yaml configuration found")
     return None
 
 
@@ -66,7 +82,7 @@ def list_profiles(prefix: str | bool = ''):
     '''
     configs = load_paipe_config()
     if configs is None:
-        print("No profiles found")
+        logger.error("No profiles found")
         return
     if prefix is True:
         prefix = ''

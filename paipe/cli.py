@@ -4,10 +4,10 @@ The command line interface (CLI).
 import sys
 import argparse
 import asyncio
-from paipe import util
-from paipe.models import PaipeContext
-from paipe.profiles import list_profiles
-from paipe.main import run_agent
+from . import util
+from .models import PaipeContext
+from .profiles import list_profiles
+from .main import run_agent
 
 util.patch_video_mimetype()
 

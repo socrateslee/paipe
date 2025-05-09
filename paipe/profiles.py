@@ -90,3 +90,16 @@ def list_profiles(prefix: str | bool = ''):
         if prefix and not profile_name.startswith(prefix):
             continue
         print(profile_name)
+
+
+def inspect_profile(profile_name: str):
+    '''
+    Inspect a profile.
+    '''
+    profile = get_profile(profile_name)
+    if profile is None:
+        logger.error(f"Profile {profile_name} not found")
+        return
+    if api_key := profile.get('api_key'):
+        profile['api_key'] = f'{api_key[:5]}****{api_key[-5:]}'
+    print(yaml.dump(profile, sort_keys=False))

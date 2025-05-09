@@ -6,7 +6,7 @@ import argparse
 import asyncio
 from . import util
 from .models import PaipeContext
-from .profiles import list_profiles
+from .profiles import list_profiles, inspect_profile
 from .main import run_agent
 
 util.patch_video_mimetype()
@@ -62,6 +62,9 @@ def build_call_parser(parser):
                         default=None,
                         const=True,
                         help='List available profiles with optional prefix specified')
+    parser.add_argument('--inspect',
+                        type=str,
+                        help='Inspect a profile.')
     parser.add_argument('-e', '--extract-code-block',
                         nargs='?',
                         type=str,
@@ -142,6 +145,9 @@ def handle_call(args):
     if args.list:
         profiles = list_profiles(args.list)
         sys.exit(0)
+    if args.inspect:
+        inspect_profile(args.inspect)
+        sys.exit(0)
     context_dict = {
         'stream': args.stream,
         'prompt': ' '.join(args.prompt),
@@ -198,5 +204,6 @@ if __name__ == '__main__':
         main()
     except Exception as e:
         util.logger.exception(e)
+        print(f'Error: {dir(e)}')
         if hasattr(e, 'body'):
             util.logger.error(e.body)

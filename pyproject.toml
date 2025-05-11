@@ -36,3 +36,15 @@ paipe = "paipe.cli:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "docs/**",
+    "paipe/**"
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "docs/**",
+    "paipe/**"
+]

@@ -22,4 +22,4 @@ none: do nothing
     cmd_archive.add_argument(
         'filelist',
         type=str, nargs='*', metavar='FILENAME',
-        help='Lisf of filenames to archvie')
+        help='List of filenames to archvie')

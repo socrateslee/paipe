@@ -6,9 +6,8 @@ def get_stdio():
 
 
 def handle_operation(args):
-    if args.operation == 'archive':
+    if args.operation in ['archive', 'a']:
         from . archive import archive
         print(
             archive(get_stdio() or '', args.filelist, use_stdin_as=args.stdin)
         )
- 

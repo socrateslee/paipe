@@ -22,7 +22,8 @@ GLOBAL_ARGS = GLOBAL_ACTION_ARGS + [
 
 SUB_COMMANDS = [
     'call',
-    'op'
+    'op',
+    'mcp',
 ]
 
 def build_call_parser(parser):
@@ -100,6 +101,10 @@ def build_parser(with_sub_parser: bool, default_call_parser: bool) -> argparse.A
         command_parser = sub_parsers.add_parser('op', help='Perform a specific operation')
         from .operations.subcli import build_command_parser
         build_command_parser(command_parser)
+
+        mcp_parser = sub_parsers.add_parser('mcp', help='Machine-readable Communication Protocol (MCP) operations')
+        from .mcp.subcli import build_mcp_parser
+        build_mcp_parser(mcp_parser)
 
     # Bind sub parser 'call' as root parser 
     if default_call_parser:
@@ -194,6 +199,9 @@ def main():
     elif args.command == 'op':
         from .operations.base import handle_operation
         handle_operation(args)
+    elif args.command == 'mcp':
+        from paipe.mcp.subcli import handle_mcp_command
+        handle_mcp_command(args)
     else:
         print(f'Unknown command: {args.command}')
         sys.exit(1)

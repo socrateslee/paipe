@@ -1,12 +1,14 @@
 import sys
+import os
 import json
 import base64
 import mimetypes
 import logging
 import importlib
+import inspect
 import re
 import argparse
-from typing import Generator
+from typing import Callable, Generator, Dict, Any
 import pydantic_ai.result
 
 logger = logging.getLogger('paipe')
@@ -83,6 +85,33 @@ def find_cls(module, base_class):
     return None
 
 
+def find_all_cls(module, base_class):
+    '''
+    Find all classes in a module that inherit from a base class.
+    '''
+    classes = []
+    for name in dir(module):
+        obj = getattr(module, name)
+        if hasattr(obj, '__mro__') and base_class in obj.__mro__[1:]:
+            classes.append(obj)
+    return classes
+
+
+def list_sub_modules(parent_module):
+    '''
+    List sub modules of a module.
+    '''
+    sub_modules = []
+    module_path = parent_module.__file__
+    py_files = [f for f in os.listdir(os.path.dirname(module_path)) if f.endswith('.py')]
+    for py_file in py_files:
+        module_name = py_file[:-3]
+        if module_name == '__init__':
+            continue
+        sub_modules.append(module_name)
+    return sub_modules
+
+
 def extract_markdown_code_blocks(markdown: str, language: str = '') -> list:
     """
     Extract code blocks from a markdown document.
@@ -118,3 +147,24 @@ def show_json_usage(usage: pydantic_ai.result.Usage,
     if file is None:
         file = sys.stderr
     print("Usage:", json.dumps(usage.__dict__), file=file)
+
+
+def init_via_annotations(cls: type, params: Dict[str, Any]):
+    '''
+    Initialize a class with parameters via annotations.
+    '''
+    init_params = {}
+    for key in cls.__init__.__annotations__:
+        if key == 'return':
+            continue
+        if key in params:
+            init_params[key] = params.pop(key)
+    return cls(**init_params)
+
+
+def kwargs_by_func_def(func: Callable, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    '''
+    Filter kwargs by function definition.
+    '''
+    func_def = inspect.signature(func)
+    return {k: v for k, v in kwargs.items() if k in func_def.parameters}

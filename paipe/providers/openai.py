@@ -12,11 +12,7 @@ from pydantic_ai.models.openai import (
     APIStatusError,
     ModelHTTPError
 )
-
-
-def non_annotated(model_settings: ModelSettings) -> dict[str, Any]:
-    """Extract non annotated key-value pairs from model_settings."""
-    return {k: v for (k, v) in model_settings.items() if k not in OpenAIModelSettings.__annotations__}
+from ..util import kwargs_by_func_def
 
 
 class OpenAIModel(pydantic_ai.models.openai.OpenAIModel):
@@ -57,16 +53,8 @@ class OpenAIModel(pydantic_ai.models.openai.OpenAIModel):
                 tool_choice=tool_choice or NOT_GIVEN,
                 stream=stream,
                 stream_options={'include_usage': True} if stream else NOT_GIVEN,
-                max_tokens=model_settings.get('max_tokens', NOT_GIVEN),
-                temperature=model_settings.get('temperature', NOT_GIVEN),
-                top_p=model_settings.get('top_p', NOT_GIVEN),
-                timeout=model_settings.get('timeout', NOT_GIVEN),
-                seed=model_settings.get('seed', NOT_GIVEN),
-                presence_penalty=model_settings.get('presence_penalty', NOT_GIVEN),
-                frequency_penalty=model_settings.get('frequency_penalty', NOT_GIVEN),
-                logit_bias=model_settings.get('logit_bias', NOT_GIVEN),
                 reasoning_effort=model_settings.get('openai_reasoning_effort', NOT_GIVEN),
-                **non_annotated(model_settings),
+                **kwargs_by_func_def(self.client.chat.completions.create, model_settings),
             )
         except APIStatusError as e:
             if (status_code := e.status_code) >= 400:
